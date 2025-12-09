@@ -441,12 +441,13 @@
                 return;
             }
 
-            if (!window.jspdf || !window.jspdf.jsPDF || !window.jspdf.AcroFormTextField) {
+            const jspdfLib = window.jspdf || {};
+            if (!jspdfLib.jsPDF) {
                 alert('Fillable PDF generation is not supported in this browser.');
                 return;
             }
 
-            const { jsPDF, AcroFormTextField } = window.jspdf;
+            const { jsPDF } = jspdfLib;
             const formData = new FormData(form);
             const getFieldValue = (name) => {
                 if (name === 'declaration_confirmed') {
@@ -456,6 +457,10 @@
                 return formData.get(name) || '';
             };
             const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+            if (typeof doc.AcroFormTextField !== 'function') {
+                alert('Fillable PDF generation is not supported in this browser.');
+                return;
+            }
             const pageHeight = doc.internal.pageSize.getHeight();
             const leftMargin = 40;
             const labelColumnWidth = 170;
@@ -497,7 +502,7 @@
                 const fieldX = options.fieldX || x + labelColumnWidth;
                 const fieldY = options.fieldY || y - 12;
                 doc.text(label, x, y);
-                const field = new AcroFormTextField();
+                const field = new doc.AcroFormTextField();
                 field.fieldName = name;
                 field.value = getFieldValue(name);
                 field.Rect = [fieldX, fieldY, width, fieldHeight];
