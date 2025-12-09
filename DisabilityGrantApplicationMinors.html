@@ -37,20 +37,21 @@
         }
         h1 { font-size: 18px; margin-bottom: 5px; }
         h2 { font-size: 16px; margin-top: 0; color: #555; }
-        h3 { 
-            background-color: #eee; 
-            padding: 10px; 
-            border-left: 5px solid #0056b3; 
+        h3 {
+            background-color: #eee;
+            padding: 10px;
+            border-left: 5px solid #0056b3;
             margin-top: 30px;
             font-size: 14px;
         }
-        
+
         /* Warning Box */
         .warning-box {
             border: 2px solid red;
             background-color: #fff0f0;
             padding: 15px;
             font-size: 12px;
+            margin-top: 25px;
             margin-bottom: 20px;
             font-weight: bold;
             text-align: justify;
@@ -72,19 +73,19 @@
         .form-group.full-width {
             flex: 100%;
         }
-        
+
         label {
             font-weight: bold;
             font-size: 12px;
             margin-bottom: 5px;
         }
-        
+
         input[type="text"], input[type="date"], input[type="number"], select {
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-        
+
         /* Checkbox groups */
         .checkbox-group {
             margin-bottom: 15px;
@@ -144,14 +145,190 @@
         <h1 style="margin-top: 20px; font-size: 22px;">Disability Assistance Grant Application (Minors)</h1>
     </div>
 
-    <div class="warning-box">
-        WARNING: Any person who, for the purpose of obtaining or continuing a Disability Assistance Grant either for himself or for any other person, knowingly makes any false statement or false representation, or who knowingly obtains payment of or continues to receive a grant in respect of which he is disqualified from receiving or which for any reason is not payable to him, is liable on summary conviction to a fine of one thousand dollars.
-    </div>
-
     <form id="dagForm">
-        
-        <h3>1. Benefit Screening Questions</h3>
-        
+
+        <h3>1. Applicant Details</h3>
+        <p style="font-size: 12px; font-style: italic;">(The person applying on behalf of the child)</p>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" name="app_lastname">
+            </div>
+            <div class="form-group">
+                <label>First Name</label>
+                <input type="text" name="app_firstname">
+            </div>
+            <div class="form-group">
+                <label>Middle Name</label>
+                <input type="text" name="app_middlename">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Date of Birth</label>
+                <input type="date" name="app_dob">
+            </div>
+            <div class="form-group">
+                <label>Age</label>
+                <input type="number" name="app_age" style="width: 60px;">
+            </div>
+            <div class="form-group">
+                <label>Sex</label>
+                <select name="app_sex">
+                    <option value="">Select</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>ID Card No.</label>
+                <input type="text" name="app_id">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group full-width">
+                <label>Residential Address (Street, Town, Country)</label>
+                <input type="text" name="app_res_address">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group full-width">
+                <label>Mailing Address (if different)</label>
+                <input type="text" name="app_mail_address">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Relationship to Beneficiary</label>
+                <select name="app_relationship">
+                    <option value="Mother">Mother</option>
+                    <option value="Father">Father</option>
+                    <option value="Legal Guardian">Legal Guardian</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Marital Status</label>
+                <select name="app_marital">
+                    <option value="Single">Single</option>
+                    <option value="Married">Married</option>
+                    <option value="Widowed">Widowed</option>
+                    <option value="Divorced">Divorced</option>
+                    <option value="Separated">Separated</option>
+                    <option value="Common Law">Common Law</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Status</label>
+                <select name="app_status">
+                    <option value="Citizen">Citizen</option>
+                    <option value="Legal Resident">Legal Resident</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Resident No. (If applicable)</label>
+                <input type="text" name="app_resident_no">
+            </div>
+            <div class="form-group">
+                <label>Pin Number</label>
+                <input type="text" name="app_pin">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Contact No. (Cell)</label>
+                <input type="text" name="app_cell">
+            </div>
+            <div class="form-group">
+                <label>Contact No. (Home)</label>
+                <input type="text" name="app_home">
+            </div>
+        </div>
+
+        <h3>2. Beneficiary Details (Child under 18)</h3>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" name="ben_lastname">
+            </div>
+            <div class="form-group">
+                <label>First Name</label>
+                <input type="text" name="ben_firstname">
+            </div>
+            <div class="form-group">
+                <label>Middle Name</label>
+                <input type="text" name="ben_middlename">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Date of Birth</label>
+                <input type="date" name="ben_dob">
+            </div>
+            <div class="form-group">
+                <label>Age</label>
+                <input type="number" name="ben_age" style="width: 60px;">
+            </div>
+            <div class="form-group">
+                <label>Sex</label>
+                <select name="ben_sex">
+                    <option value="">Select</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>ID Card No. (If applicable)</label>
+                <input type="text" name="ben_id">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Country of Birth</label>
+                <input type="text" name="ben_cob">
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select name="ben_status">
+                    <option value="Citizen">Citizen</option>
+                    <option value="Legal Resident">Legal Resident</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Resident No.</label>
+                <input type="text" name="ben_res_no">
+            </div>
+        </div>
+
+        <h3>3. Parents' Information</h3>
+        <p style="font-size: 12px; font-style: italic;">Complete if the Mother/Father are not the primary applicant listed above.</p>
+
+        <div class="form-row">
+            <div class="form-group full-width">
+                <label style="text-decoration: underline;">Mother's Name (if different from Applicant)</label>
+                <input type="text" name="mother_name" placeholder="Full Name">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group full-width">
+                <label style="text-decoration: underline;">Father's Name (if different from Applicant)</label>
+                <input type="text" name="father_name" placeholder="Full Name">
+            </div>
+        </div>
+
+        <h3>4. Benefit Screening Questions</h3>
+
         <div class="checkbox-group">
             <label>1. Are you or anyone else in receipt of Public Assistance on behalf of this child?</label>
             <div class="checkbox-options">
@@ -212,190 +389,14 @@
             </div>
         </div>
 
-        <h3>2. Applicant Details</h3>
-        <p style="font-size: 12px; font-style: italic;">(The person applying on behalf of the child)</p>
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label>Last Name</label>
-                <input type="text" name="app_lastname">
-            </div>
-            <div class="form-group">
-                <label>First Name</label>
-                <input type="text" name="app_firstname">
-            </div>
-            <div class="form-group">
-                <label>Middle Name</label>
-                <input type="text" name="app_middlename">
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Date of Birth</label>
-                <input type="date" name="app_dob">
-            </div>
-            <div class="form-group">
-                <label>Age</label>
-                <input type="number" name="app_age" style="width: 60px;">
-            </div>
-            <div class="form-group">
-                <label>Sex</label>
-                <select name="app_sex">
-                    <option value="">Select</option>
-                    <option value="M">Male</option>
-                    <option value="F">Female</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>ID Card No.</label>
-                <input type="text" name="app_id">
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group full-width">
-                <label>Residential Address (Street, Town, Country)</label>
-                <input type="text" name="app_res_address">
-            </div>
-        </div>
-        
-        <div class="form-row">
-            <div class="form-group full-width">
-                <label>Mailing Address (if different)</label>
-                <input type="text" name="app_mail_address">
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Relationship to Beneficiary</label>
-                <select name="app_relationship">
-                    <option value="Mother">Mother</option>
-                    <option value="Father">Father</option>
-                    <option value="Legal Guardian">Legal Guardian</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Marital Status</label>
-                <select name="app_marital">
-                    <option value="Single">Single</option>
-                    <option value="Married">Married</option>
-                    <option value="Widowed">Widowed</option>
-                    <option value="Divorced">Divorced</option>
-                    <option value="Separated">Separated</option>
-                    <option value="Common Law">Common Law</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Status</label>
-                <select name="app_status">
-                    <option value="Citizen">Citizen</option>
-                    <option value="Legal Resident">Legal Resident</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Resident No. (If applicable)</label>
-                <input type="text" name="app_resident_no">
-            </div>
-            <div class="form-group">
-                <label>Pin Number</label>
-                <input type="text" name="app_pin">
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Contact No. (Cell)</label>
-                <input type="text" name="app_cell">
-            </div>
-            <div class="form-group">
-                <label>Contact No. (Home)</label>
-                <input type="text" name="app_home">
-            </div>
-        </div>
-
-        <h3>3. Beneficiary Details (Child under 18)</h3>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Last Name</label>
-                <input type="text" name="ben_lastname">
-            </div>
-            <div class="form-group">
-                <label>First Name</label>
-                <input type="text" name="ben_firstname">
-            </div>
-            <div class="form-group">
-                <label>Middle Name</label>
-                <input type="text" name="ben_middlename">
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Date of Birth</label>
-                <input type="date" name="ben_dob">
-            </div>
-            <div class="form-group">
-                <label>Age</label>
-                <input type="number" name="ben_age" style="width: 60px;">
-            </div>
-            <div class="form-group">
-                <label>Sex</label>
-                <select name="ben_sex">
-                    <option value="">Select</option>
-                    <option value="M">Male</option>
-                    <option value="F">Female</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>ID Card No. (If applicable)</label>
-                <input type="text" name="ben_id">
-            </div>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label>Country of Birth</label>
-                <input type="text" name="ben_cob">
-            </div>
-            <div class="form-group">
-                <label>Status</label>
-                <select name="ben_status">
-                    <option value="Citizen">Citizen</option>
-                    <option value="Legal Resident">Legal Resident</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Resident No.</label>
-                <input type="text" name="ben_res_no">
-            </div>
-        </div>
-
-        <h3>4. Parents' Information</h3>
-        <p style="font-size: 12px; font-style: italic;">Complete if the Mother/Father are not the primary applicant listed above.</p>
-
-        <div class="form-row">
-            <div class="form-group full-width">
-                <label style="text-decoration: underline;">Mother's Name (if different from Applicant)</label>
-                <input type="text" name="mother_name" placeholder="Full Name">
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group full-width">
-                <label style="text-decoration: underline;">Father's Name (if different from Applicant)</label>
-                <input type="text" name="father_name" placeholder="Full Name">
-            </div>
+        <div class="warning-box" role="alert">
+            WARNING: Any person who, for the purpose of obtaining or continuing a Disability Assistance Grant either for himself or for any other person, knowingly makes any false statement or false representation, or who knowingly obtains payment of or continues to receive a grant in respect of which he is disqualified from receiving or which for any reason is not payable to him, is liable on summary conviction to a fine of one thousand dollars.
         </div>
 
         <h3>5. Declaration</h3>
-        
+
         <p style="text-align: justify; font-size: 14px;">
-            <input type="checkbox" name="declaration_confirmed" required> 
+            <input type="checkbox" name="declaration_confirmed" required>
             I declare that all the statements on this form are true to the best of my knowledge and belief and that I am not, to the best of my knowledge, disqualified from receiving a Disability Assistance Grant on behalf of a child with a disability for any of the reasons stated on this form.
         </p>
 
@@ -411,10 +412,10 @@
         </div>
 
         <div class="actions">
-            <button type="button" onclick="window.print()">Print / Save as PDF</button>
-            <button type="button" id="downloadFillablePdf" class="secondary">Download Fillable PDF</button>
-            <p style="font-size: 11px; color: #666; margin-top: 10px;">Clicking "Print / Save as PDF" will open your browser's print dialog. Select "Save as PDF" to save a static copy.</p>
-            <p style="font-size: 11px; color: #666; margin-top: 5px;">Use "Download Fillable PDF" to export an interactive version with editable fields.</p>
+            <button type="button" id="saveFillablePdf">Save as Fillable PDF</button>
+            <button type="button" class="secondary" onclick="window.print()">Print Static Copy</button>
+            <p style="font-size: 11px; color: #666; margin-top: 10px;">"Save as Fillable PDF" will export an interactive PDF with editable form fields.</p>
+            <p style="font-size: 11px; color: #666; margin-top: 5px;">Use "Print Static Copy" if you need a traditional non-fillable version.</p>
         </div>
 
     </form>
@@ -424,7 +425,8 @@
 <script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.plugin.acroform.js"></script>
 <script>
     (function () {
-        const fillableBtn = document.getElementById('downloadFillablePdf');
+        const WARNING_TEXT = 'WARNING: Any person who, for the purpose of obtaining or continuing a Disability Assistance Grant either for himself or for any other person, knowingly makes any false statement or false representation, or who knowingly obtains payment of or continues to receive a grant in respect of which he is disqualified from receiving or which for any reason is not payable to him, is liable on summary conviction to a fine of one thousand dollars.';
+        const fillableBtn = document.getElementById('saveFillablePdf');
         if (!fillableBtn) {
             return;
         }
@@ -509,18 +511,24 @@
                 addTextField(`${promptText} (Yes/No)`, name, { width: 80 });
             };
 
-            addSection('1. Benefit Screening Questions');
-            yesNoHelper('q1', '1. Public Assistance received on behalf of child?');
-            yesNoHelper('q2', '2. Other benefits on behalf of child?');
-            addTextField('   If yes, how much?', 'q2_amount', { width: 120, lineGap: 20 });
-            yesNoHelper('q3', '3. Applied for this grant before?');
-            yesNoHelper('q4', '4. Receive grant in another district?');
-            yesNoHelper('q5', '5. Child holds Trinidad & Tobago Passport?');
-            addTextField('Passport Number', 'passport_number', { width: 140 });
-            addTextField('Date of Departure (Last 3 Years)', 'date_departure', { width: 140 });
-            addTextField('Date of Return (Last 3 Years)', 'date_return', { width: 140 });
+            const addWarningNotice = () => {
+                const warningLines = doc.splitTextToSize(WARNING_TEXT, 500);
+                ensureSpace(warningLines.length + 2);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(184, 28, 28);
+                doc.text('WARNING', leftMargin, y);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(0, 0, 0);
+                y += 14;
+                warningLines.forEach((line) => {
+                    ensureSpace();
+                    doc.text(line, leftMargin, y);
+                    y += 12;
+                });
+                y += 10;
+            };
 
-            addSection('2. Applicant Details');
+            addSection('1. Applicant Details');
             addTextField('Last Name', 'app_lastname');
             addTextField('First Name', 'app_firstname');
             addTextField('Middle Name', 'app_middlename');
@@ -538,7 +546,7 @@
             addTextField('Contact No. (Cell)', 'app_cell', { width: 150 });
             addTextField('Contact No. (Home)', 'app_home', { width: 150 });
 
-            addSection('3. Beneficiary Details');
+            addSection('2. Beneficiary Details');
             addTextField('Child Last Name', 'ben_lastname');
             addTextField('Child First Name', 'ben_firstname');
             addTextField('Child Middle Name', 'ben_middlename');
@@ -550,9 +558,22 @@
             addTextField('Status', 'ben_status', { width: 150 });
             addTextField('Resident No.', 'ben_res_no', { width: 150 });
 
-            addSection("4. Parents' Information");
+            addSection("3. Parents' Information");
             addTextField("Mother's Name (if different)", 'mother_name', { width: 300 });
             addTextField("Father's Name (if different)", 'father_name', { width: 300 });
+
+            addSection('4. Benefit Screening Questions');
+            yesNoHelper('q1', 'Public Assistance received on behalf of child');
+            yesNoHelper('q2', 'Other benefits on behalf of child');
+            addTextField('If yes, how much?', 'q2_amount', { width: 120, lineGap: 20 });
+            yesNoHelper('q3', 'Applied for this grant before');
+            yesNoHelper('q4', 'Receive grant in another district');
+            yesNoHelper('q5', 'Child holds Trinidad & Tobago Passport');
+            addTextField('Passport Number', 'passport_number', { width: 140 });
+            addTextField('Date of Departure (Last 3 Years)', 'date_departure', { width: 140 });
+            addTextField('Date of Return (Last 3 Years)', 'date_return', { width: 140 });
+
+            addWarningNotice();
 
             addSection('5. Declaration');
             addTextField('Declaration Confirmed (Yes/No)', 'declaration_confirmed', { width: 100 });
