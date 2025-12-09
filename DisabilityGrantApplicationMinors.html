@@ -114,6 +114,12 @@
             border-radius: 5px;
         }
         button:hover { background-color: #004494; }
+        button.secondary {
+            background-color: #2d8f2d;
+        }
+        button.secondary:hover {
+            background-color: #256f25;
+        }
 
         /* Print Styles */
         @media print {
@@ -389,7 +395,7 @@
         <h3>5. Declaration</h3>
         
         <p style="text-align: justify; font-size: 14px;">
-            <input type="checkbox" required> 
+            <input type="checkbox" name="declaration_confirmed" required> 
             I declare that all the statements on this form are true to the best of my knowledge and belief and that I am not, to the best of my knowledge, disqualified from receiving a Disability Assistance Grant on behalf of a child with a disability for any of the reasons stated on this form.
         </p>
 
@@ -406,11 +412,155 @@
 
         <div class="actions">
             <button type="button" onclick="window.print()">Print / Save as PDF</button>
-            <p style="font-size: 11px; color: #666; margin-top: 10px;">Clicking this button will open your browser's print dialog. Select "Save as PDF" to save a digital copy.</p>
+            <button type="button" id="downloadFillablePdf" class="secondary">Download Fillable PDF</button>
+            <p style="font-size: 11px; color: #666; margin-top: 10px;">Clicking "Print / Save as PDF" will open your browser's print dialog. Select "Save as PDF" to save a static copy.</p>
+            <p style="font-size: 11px; color: #666; margin-top: 5px;">Use "Download Fillable PDF" to export an interactive version with editable fields.</p>
         </div>
 
     </form>
 </div>
 
+<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.plugin.acroform.js"></script>
+<script>
+    (function () {
+        const fillableBtn = document.getElementById('downloadFillablePdf');
+        if (!fillableBtn) {
+            return;
+        }
+
+        fillableBtn.addEventListener('click', generateFillablePdf);
+
+        function generateFillablePdf() {
+            const form = document.getElementById('dagForm');
+            if (!form) {
+                return;
+            }
+
+            if (!form.reportValidity()) {
+                return;
+            }
+
+            if (!window.jspdf || !window.jspdf.jsPDF || !window.jspdf.AcroFormTextField) {
+                alert('Fillable PDF generation is not supported in this browser.');
+                return;
+            }
+
+            const { jsPDF, AcroFormTextField } = window.jspdf;
+            const formData = new FormData(form);
+            const getFieldValue = (name) => {
+                if (name === 'declaration_confirmed') {
+                    const checkbox = form.querySelector('[name="declaration_confirmed"]');
+                    return checkbox && checkbox.checked ? 'Yes' : 'No';
+                }
+                return formData.get(name) || '';
+            };
+            const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const leftMargin = 40;
+            const labelColumnWidth = 170;
+            const fieldHeight = 18;
+            let y = 50;
+            const lineGap = 24;
+
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.text('Government of the Republic of Trinidad and Tobago', leftMargin, y);
+            y += 18;
+            doc.text('Ministry of the People, Social Development and Family Services', leftMargin, y);
+            y += 18;
+            doc.text('Disability Assistance Grant Application (Minors)', leftMargin, y);
+            y += 24;
+            doc.setFont(undefined, 'normal');
+            doc.setFontSize(10);
+            doc.initForm();
+
+            const ensureSpace = (lines = 1) => {
+                if (y + lineGap * lines > pageHeight - 40) {
+                    doc.addPage();
+                    y = 50;
+                }
+            };
+
+            const addSection = (title) => {
+                ensureSpace();
+                doc.setFont(undefined, 'bold');
+                doc.text(title, leftMargin, y);
+                y += 16;
+                doc.setFont(undefined, 'normal');
+            };
+
+            const addTextField = (label, name, options = {}) => {
+                ensureSpace();
+                const width = options.width || 260;
+                const x = options.x || leftMargin;
+                const fieldX = options.fieldX || x + labelColumnWidth;
+                const fieldY = options.fieldY || y - 12;
+                doc.text(label, x, y);
+                const field = new AcroFormTextField();
+                field.fieldName = name;
+                field.value = getFieldValue(name);
+                field.Rect = [fieldX, fieldY, width, fieldHeight];
+                doc.addField(field);
+                y += options.lineGap || lineGap;
+            };
+
+            const yesNoHelper = (name, promptText) => {
+                addTextField(`${promptText} (Yes/No)`, name, { width: 80 });
+            };
+
+            addSection('1. Benefit Screening Questions');
+            yesNoHelper('q1', '1. Public Assistance received on behalf of child?');
+            yesNoHelper('q2', '2. Other benefits on behalf of child?');
+            addTextField('   If yes, how much?', 'q2_amount', { width: 120, lineGap: 20 });
+            yesNoHelper('q3', '3. Applied for this grant before?');
+            yesNoHelper('q4', '4. Receive grant in another district?');
+            yesNoHelper('q5', '5. Child holds Trinidad & Tobago Passport?');
+            addTextField('Passport Number', 'passport_number', { width: 140 });
+            addTextField('Date of Departure (Last 3 Years)', 'date_departure', { width: 140 });
+            addTextField('Date of Return (Last 3 Years)', 'date_return', { width: 140 });
+
+            addSection('2. Applicant Details');
+            addTextField('Last Name', 'app_lastname');
+            addTextField('First Name', 'app_firstname');
+            addTextField('Middle Name', 'app_middlename');
+            addTextField('Date of Birth', 'app_dob', { width: 140 });
+            addTextField('Age', 'app_age', { width: 60 });
+            addTextField('Sex', 'app_sex', { width: 80 });
+            addTextField('ID Card No.', 'app_id', { width: 140 });
+            addTextField('Residential Address', 'app_res_address', { width: 300 });
+            addTextField('Mailing Address', 'app_mail_address', { width: 300 });
+            addTextField('Relationship to Beneficiary', 'app_relationship', { width: 180 });
+            addTextField('Marital Status', 'app_marital', { width: 180 });
+            addTextField('Status (Citizen / Legal Resident)', 'app_status', { width: 200 });
+            addTextField('Resident No.', 'app_resident_no', { width: 180 });
+            addTextField('Pin Number', 'app_pin', { width: 120 });
+            addTextField('Contact No. (Cell)', 'app_cell', { width: 150 });
+            addTextField('Contact No. (Home)', 'app_home', { width: 150 });
+
+            addSection('3. Beneficiary Details');
+            addTextField('Child Last Name', 'ben_lastname');
+            addTextField('Child First Name', 'ben_firstname');
+            addTextField('Child Middle Name', 'ben_middlename');
+            addTextField('Child Date of Birth', 'ben_dob', { width: 140 });
+            addTextField('Child Age', 'ben_age', { width: 60 });
+            addTextField('Child Sex', 'ben_sex', { width: 80 });
+            addTextField('Child ID Card No.', 'ben_id', { width: 140 });
+            addTextField('Country of Birth', 'ben_cob', { width: 200 });
+            addTextField('Status', 'ben_status', { width: 150 });
+            addTextField('Resident No.', 'ben_res_no', { width: 150 });
+
+            addSection("4. Parents' Information");
+            addTextField("Mother's Name (if different)", 'mother_name', { width: 300 });
+            addTextField("Father's Name (if different)", 'father_name', { width: 300 });
+
+            addSection('5. Declaration');
+            addTextField('Declaration Confirmed (Yes/No)', 'declaration_confirmed', { width: 100 });
+            addTextField('Declaration Date', 'decl_date', { width: 140 });
+
+            doc.save('disability-assistance-grant-fillable.pdf');
+        }
+    })();
+</script>
 </body>
 </html>
