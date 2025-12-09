@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Government Services Forms Hub</title>
+    <meta name="description" content="Central landing page for every government form, with quick search, filters, and support details.">
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --panel: #ffffff;
+            --primary: #004aad;
+            --primary-dark: #003a88;
+            --accent: #00a4a6;
+            --text: #1f2a37;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 20px 45px rgba(15,23,42,0.08);
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+            background: linear-gradient(180deg, #edf1f9 0%, #fefefe 40%);
+            color: var(--text);
+        }
+        a { color: inherit; }
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+        }
+        header.hero {
+            background: var(--panel);
+            padding: 40px;
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+        }
+        .eyebrow {
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.2em;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+        .hero h1 {
+            margin: 0 0 16px;
+            font-size: clamp(2rem, 4vw, 3rem);
+        }
+        .hero p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+        .hero .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 24px;
+        }
+        .btn {
+            border: none;
+            border-radius: 999px;
+            padding: 14px 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 15px 30px rgba(0,74,173,0.2);
+        }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-secondary {
+            background: rgba(0,74,173,0.08);
+            color: var(--primary);
+        }
+        .panel {
+            background: var(--panel);
+            margin-top: 30px;
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+        }
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .filters label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            margin-bottom: 8px;
+            display: block;
+        }
+        .filters input,
+        .filters select {
+            width: 100%;
+            padding: 14px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            font-size: 1rem;
+            background: #f9fafb;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+        .stat-card {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid var(--border);
+        }
+        .stat-card span {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+        .stat-card strong {
+            font-size: 2rem;
+            display: block;
+            margin-top: 8px;
+        }
+        .panel h2 {
+            margin-top: 0;
+        }
+        .forms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+        }
+        .form-card {
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: #fcfdff;
+        }
+        .form-card h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        .form-card p {
+            margin: 0;
+            color: var(--muted);
+        }
+        .badge {
+            width: fit-content;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(0,74,173,0.08);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .form-meta {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+        .form-meta li {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed var(--border);
+            padding: 6px 0;
+        }
+        .form-meta span {
+            font-weight: 600;
+            color: var(--text);
+        }
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .tag {
+            background: #eef2ff;
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+        }
+        .primary-link {
+            margin-top: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+        }
+        .help-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            align-items: center;
+        }
+        footer {
+            text-align: center;
+            color: var(--muted);
+            margin-top: 60px;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 640px) {
+            header.hero,
+            .panel {
+                padding: 24px;
+            }
+            .form-meta li {
+                flex-direction: column;
+                gap: 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <header class="hero">
+            <div>
+                <div class="eyebrow">Government of the Republic of Trinidad and Tobago</div>
+                <h1>All Government Forms in One Trusted Hub</h1>
+                <p>
+                    Quickly browse, search, and launch every application form offered by ministries and agencies.
+                    Save time with smart filters, stay updated with the latest revisions, and start each request
+                    with confidence.
+                </p>
+                <div class="actions">
+                    <a class="btn btn-primary" href="#forms-list">Browse forms</a>
+                    <a class="btn btn-secondary" href="#support">Need help?</a>
+                </div>
+            </div>
+            <div>
+                <p style="font-weight:600; margin-top:0;">What you can expect</p>
+                <ul style="padding-left:18px; color:var(--muted); line-height:1.7; margin:0;">
+                    <li>Centralized access to every published government form</li>
+                    <li>Simple filters for ministry, category, or delivery format</li>
+                    <li>At-a-glance guidance before you open a form</li>
+                    <li>Contact details if you need personalised assistance</li>
+                </ul>
+            </div>
+        </header>
+
+        <section class="panel" aria-label="Form filters">
+            <div class="filters">
+                <div>
+                    <label for="searchInput">Search titles or keywords</label>
+                    <input id="searchInput" type="search" placeholder="e.g. Disability grant, passport, tax" autocomplete="off">
+                </div>
+                <div>
+                    <label for="categoryFilter">Category</label>
+                    <select id="categoryFilter">
+                        <option value="all">All categories</option>
+                        <option value="Social Support">Social Support</option>
+                        <option value="Family & Children">Family & Children</option>
+                        <option value="Citizenship & Identity">Citizenship & Identity</option>
+                        <option value="Business & Finance">Business & Finance</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="formatFilter">Delivery format</label>
+                    <select id="formatFilter">
+                        <option value="all">Any format</option>
+                        <option value="online">Online form</option>
+                        <option value="pdf">Downloadable PDF</option>
+                        <option value="in-person">In-person pickup</option>
+                    </select>
+                </div>
+                <div>
+                    <label>&nbsp;</label>
+                    <button id="clearFilters" class="btn btn-secondary" type="button" style="width:100%;">Reset filters</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel stats" aria-label="Form availability stats">
+            <div class="stat-card">
+                <span>Total forms published</span>
+                <strong data-stat="total">0</strong>
+            </div>
+            <div class="stat-card">
+                <span>Digital applications</span>
+                <strong data-stat="online">0</strong>
+            </div>
+            <div class="stat-card">
+                <span>Downloadable packages</span>
+                <strong data-stat="downloadable">0</strong>
+            </div>
+        </section>
+
+        <section id="forms-list" class="panel" aria-live="polite">
+            <h2 style="margin-bottom:10px;">Browse every government form</h2>
+            <p style="margin-top:0; color:var(--muted);">Use the filters above, or scroll through the complete library below.</p>
+            <div class="forms-grid" id="formsGrid"></div>
+        </section>
+
+        <section id="support" class="panel help-panel">
+            <div>
+                <h2>Need help choosing the right form?</h2>
+                <p style="color:var(--muted);">Contact the Government Service Center hotline for guidance, or
+                    visit the nearest district office for in-person support.</p>
+            </div>
+            <div style="background:#0f172a; color:#fff; border-radius:20px; padding:24px;">
+                <p style="margin-top:0; font-weight:600;">Service Center Hotline</p>
+                <p style="margin:6px 0; font-size:1.4rem;">800-4-GOV</p>
+                <p style="margin:0; font-size:0.95rem;">Monday - Friday, 8:00 a.m. - 4:00 p.m.</p>
+            </div>
+            <div style="border:1px dashed var(--border); border-radius:20px; padding:24px;">
+                <p style="margin-top:0; font-weight:600;">Email support</p>
+                <a href="mailto:formsupport@gov.tt" style="text-decoration:none; color:var(--primary); font-weight:600;">formsupport@gov.tt</a>
+                <p style="margin:12px 0 0; font-size:0.95rem; color:var(--muted);">Responses within 2 business days.</p>
+            </div>
+        </section>
+
+        <footer>
+            &copy; <span id="year"></span> Government Digital Services Division. All rights reserved.
+        </footer>
+    </div>
+
+    <script>
+        const formsData = [
+            {
+                id: "dag-minors",
+                title: "Disability Assistance Grant Application (Minors)",
+                summary: "Apply for income support on behalf of a child with a disability through the Ministry of the People, Social Development and Family Services.",
+                category: "Social Support",
+                ministry: "Social Development and Family Services",
+                format: "online",
+                lastUpdated: "November 2024",
+                processingTime: "Up to 8 weeks",
+                link: "DisabilityGrantApplicationMinors.html",
+                tags: ["disability", "grant", "minor", "income support"]
+            }
+        ];
+
+        const formsGrid = document.getElementById("formsGrid");
+        const searchInput = document.getElementById("searchInput");
+        const categoryFilter = document.getElementById("categoryFilter");
+        const formatFilter = document.getElementById("formatFilter");
+        const clearFiltersBtn = document.getElementById("clearFilters");
+        const statTotal = document.querySelector('[data-stat="total"]');
+        const statOnline = document.querySelector('[data-stat="online"]');
+        const statDownload = document.querySelector('[data-stat="downloadable"]');
+        const yearSpan = document.getElementById("year");
+
+        const updateStats = () => {
+            statTotal.textContent = formsData.length;
+            statOnline.textContent = formsData.filter(form => form.format === "online").length;
+            statDownload.textContent = formsData.filter(form => form.format === "pdf").length;
+        };
+
+        const buildTags = (tags) => tags.map(tag => `<span class="tag">${tag}</span>`).join("");
+
+        const renderForms = (list) => {
+            if (!list.length) {
+                formsGrid.innerHTML = `<div class="empty-state">No forms match your search. Try a different keyword or reset the filters.</div>`;
+                return;
+            }
+
+            formsGrid.innerHTML = list.map(form => `
+                <article class="form-card" data-category="${form.category}" data-format="${form.format}">
+                    <div class="badge">${form.category}</div>
+                    <h3>${form.title}</h3>
+                    <p>${form.summary}</p>
+                    <ul class="form-meta">
+                        <li><span>Ministry</span>${form.ministry}</li>
+                        <li><span>Format</span>${form.format === "online" ? "Online form" : form.format === "pdf" ? "Downloadable PDF" : "In-person"}</li>
+                        <li><span>Updated</span>${form.lastUpdated}</li>
+                        <li><span>Processing</span>${form.processingTime}</li>
+                    </ul>
+                    <div class="tags">${buildTags(form.tags)}</div>
+                    <a class="primary-link" href="${form.link}" target="_blank" rel="noopener">
+                        Open form
+                        <span aria-hidden="true">&rarr;</span>
+                    </a>
+                </article>
+            `).join("");
+        };
+
+        const applyFilters = () => {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            const category = categoryFilter.value;
+            const format = formatFilter.value;
+
+            const filtered = formsData.filter(form => {
+                const matchesSearch = !searchTerm || `${form.title} ${form.summary} ${form.ministry} ${form.tags.join(" ")}`.toLowerCase().includes(searchTerm);
+                const matchesCategory = category === "all" || form.category === category;
+                const matchesFormat = format === "all" || form.format === format;
+                return matchesSearch && matchesCategory && matchesFormat;
+            });
+
+            renderForms(filtered);
+        };
+
+        searchInput.addEventListener("input", applyFilters);
+        categoryFilter.addEventListener("change", applyFilters);
+        formatFilter.addEventListener("change", applyFilters);
+        clearFiltersBtn.addEventListener("click", () => {
+            searchInput.value = "";
+            categoryFilter.value = "all";
+            formatFilter.value = "all";
+            applyFilters();
+        });
+
+        yearSpan.textContent = new Date().getFullYear();
+        updateStats();
+        renderForms(formsData);
+    </script>
+</body>
+</html>
