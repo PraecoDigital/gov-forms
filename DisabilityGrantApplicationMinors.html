@@ -421,8 +421,7 @@
     </form>
 </div>
 
-<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.plugin.acroform.js"></script>
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script>
     (function () {
         const WARNING_TEXT = 'WARNING: Any person who, for the purpose of obtaining or continuing a Disability Assistance Grant either for himself or for any other person, knowingly makes any false statement or false representation, or who knowingly obtains payment of or continues to receive a grant in respect of which he is disqualified from receiving or which for any reason is not payable to him, is liable on summary conviction to a fine of one thousand dollars.';
@@ -431,102 +430,191 @@
             return;
         }
 
-        fillableBtn.addEventListener('click', generateFillablePdf);
+        fillableBtn.addEventListener('click', async () => {
+            try {
+                fillableBtn.disabled = true;
+                fillableBtn.textContent = 'Generating PDF...';
+                await generateFillablePdf();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while generating the PDF. Please try again.');
+            } finally {
+                fillableBtn.disabled = false;
+                fillableBtn.textContent = 'Save as Fillable PDF';
+            }
+        });
 
-        function generateFillablePdf() {
+        async function generateFillablePdf() {
             const form = document.getElementById('dagForm');
             if (!form) {
-                return;
+                console.error('Form not found');
+                throw new Error('Form not found');
             }
 
             if (!form.reportValidity()) {
-                return;
+                throw new Error('Form validation failed');
             }
 
-            if (!window.jspdf || !window.jspdf.jsPDF || !window.jspdf.AcroFormTextField) {
-                alert('Fillable PDF generation is not supported in this browser.');
-                return;
+            // Check for pdf-lib availability
+            if (!window.PDFLib) {
+                throw new Error('PDF library failed to load. Please refresh the page and try again.');
             }
 
-            const { jsPDF, AcroFormTextField } = window.jspdf;
-            const formData = new FormData(form);
-            const getFieldValue = (name) => {
-                if (name === 'declaration_confirmed') {
-                    const checkbox = form.querySelector('[name="declaration_confirmed"]');
-                    return checkbox && checkbox.checked ? 'Yes' : 'No';
-                }
-                return formData.get(name) || '';
-            };
-            const doc = new jsPDF({ unit: 'pt', format: 'a4' });
-            const pageHeight = doc.internal.pageSize.getHeight();
-            const leftMargin = 40;
-            const labelColumnWidth = 170;
-            const fieldHeight = 18;
-            let y = 50;
-            const lineGap = 24;
+            const { PDFDocument, rgb, StandardFonts } = window.PDFLib;
+                const pdfDoc = await PDFDocument.create();
+                const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
+                const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+                
+                let page = pdfDoc.addPage([595, 842]); // A4 in points
+                const pageWidth = page.getWidth();
+                const pageHeight = page.getHeight();
+                const leftMargin = 40;
+                const labelColumnWidth = 170;
+                const fieldHeight = 18;
+                let y = pageHeight - 50;
+                const lineGap = 24;
+                const fontSize = 10;
+                const titleFontSize = 12;
 
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.text('Government of the Republic of Trinidad and Tobago', leftMargin, y);
-            y += 18;
-            doc.text('Ministry of the People, Social Development and Family Services', leftMargin, y);
-            y += 18;
-            doc.text('Disability Assistance Grant Application (Minors)', leftMargin, y);
-            y += 24;
-            doc.setFont(undefined, 'normal');
-            doc.setFontSize(10);
-            doc.initForm();
+                const formData = new FormData(form);
+                const getFieldValue = (name) => {
+                    if (name === 'declaration_confirmed') {
+                        const checkbox = form.querySelector('[name="declaration_confirmed"]');
+                        return checkbox && checkbox.checked ? 'Yes' : 'No';
+                    }
+                    const value = formData.get(name);
+                    // Handle radio buttons
+                    if (!value) {
+                        const radio = form.querySelector(`[name="${name}"]:checked`);
+                        return radio ? radio.value : '';
+                    }
+                    return value || '';
+                };
 
-            const ensureSpace = (lines = 1) => {
-                if (y + lineGap * lines > pageHeight - 40) {
-                    doc.addPage();
-                    y = 50;
-                }
-            };
+                const ensureSpace = (lines = 1) => {
+                    if (y - lineGap * lines < 40) {
+                        page = pdfDoc.addPage([595, 842]);
+                        y = pageHeight - 50;
+                    }
+                };
 
-            const addSection = (title) => {
-                ensureSpace();
-                doc.setFont(undefined, 'bold');
-                doc.text(title, leftMargin, y);
-                y += 16;
-                doc.setFont(undefined, 'normal');
-            };
-
-            const addTextField = (label, name, options = {}) => {
-                ensureSpace();
-                const width = options.width || 260;
-                const x = options.x || leftMargin;
-                const fieldX = options.fieldX || x + labelColumnWidth;
-                const fieldY = options.fieldY || y - 12;
-                doc.text(label, x, y);
-                const field = new AcroFormTextField();
-                field.fieldName = name;
-                field.value = getFieldValue(name);
-                field.Rect = [fieldX, fieldY, width, fieldHeight];
-                doc.addField(field);
-                y += options.lineGap || lineGap;
-            };
-
-            const yesNoHelper = (name, promptText) => {
-                addTextField(`${promptText} (Yes/No)`, name, { width: 80 });
-            };
-
-            const addWarningNotice = () => {
-                const warningLines = doc.splitTextToSize(WARNING_TEXT, 500);
-                ensureSpace(warningLines.length + 2);
-                doc.setFont(undefined, 'bold');
-                doc.setTextColor(184, 28, 28);
-                doc.text('WARNING', leftMargin, y);
-                doc.setFont(undefined, 'normal');
-                doc.setTextColor(0, 0, 0);
-                y += 14;
-                warningLines.forEach((line) => {
+                const addSection = (title) => {
                     ensureSpace();
-                    doc.text(line, leftMargin, y);
-                    y += 12;
-                });
-                y += 10;
-            };
+                    page.drawText(title, {
+                        x: leftMargin,
+                        y: y,
+                        size: fontSize,
+                        font: helveticaBold,
+                    });
+                    y -= 16;
+                };
+
+                const addTextField = (label, name, options = {}) => {
+                    ensureSpace();
+                    const width = options.width || 260;
+                    const fieldX = leftMargin + labelColumnWidth;
+                    const fieldY = y - fieldHeight;
+                    
+                    // Draw label
+                    page.drawText(label, {
+                        x: leftMargin,
+                        y: y,
+                        size: fontSize,
+                        font: helvetica,
+                    });
+                    
+                    // Create fillable text field using pdf-lib's form API
+                    const form = pdfDoc.getForm();
+                    const textField = form.createTextField(name);
+                    textField.addToPage(page, {
+                        x: fieldX,
+                        y: fieldY,
+                        width: width,
+                        height: fieldHeight,
+                        borderWidth: 1,
+                        borderColor: rgb(0, 0, 0),
+                        backgroundColor: rgb(1, 1, 1),
+                    });
+                    
+                    // Set default value if present
+                    const value = getFieldValue(name);
+                    if (value) {
+                        textField.setText(value);
+                    }
+                    
+                    y -= options.lineGap || lineGap;
+                };
+
+                const yesNoHelper = (name, promptText) => {
+                    addTextField(`${promptText} (Yes/No)`, name, { width: 80 });
+                };
+
+                const addWarningNotice = () => {
+                    ensureSpace(5);
+                    // Draw WARNING title
+                    page.drawText('WARNING', {
+                        x: leftMargin,
+                        y: y,
+                        size: fontSize,
+                        font: helveticaBold,
+                        color: rgb(0.72, 0.11, 0.11),
+                    });
+                    y -= 14;
+                    
+                    // Draw warning text (split into lines)
+                    const maxWidth = pageWidth - leftMargin * 2;
+                    const words = WARNING_TEXT.split(' ');
+                    let currentLine = '';
+                    const lines = [];
+                    
+                    words.forEach(word => {
+                        const testLine = currentLine + (currentLine ? ' ' : '') + word;
+                        const textWidth = helvetica.widthOfTextAtSize(testLine, fontSize);
+                        if (textWidth > maxWidth && currentLine) {
+                            lines.push(currentLine);
+                            currentLine = word;
+                        } else {
+                            currentLine = testLine;
+                        }
+                    });
+                    if (currentLine) lines.push(currentLine);
+                    
+                    lines.forEach((line) => {
+                        ensureSpace();
+                        page.drawText(line, {
+                            x: leftMargin,
+                            y: y,
+                            size: fontSize,
+                            font: helvetica,
+                            color: rgb(0, 0, 0),
+                        });
+                        y -= 12;
+                    });
+                    y -= 10;
+                };
+
+            // Add header text
+            page.drawText('Government of the Republic of Trinidad and Tobago', {
+                x: leftMargin,
+                y: y,
+                size: titleFontSize,
+                font: helveticaBold,
+            });
+            y -= 18;
+            page.drawText('Ministry of the People, Social Development and Family Services', {
+                x: leftMargin,
+                y: y,
+                size: titleFontSize,
+                font: helveticaBold,
+            });
+            y -= 18;
+            page.drawText('Disability Assistance Grant Application (Minors)', {
+                x: leftMargin,
+                y: y,
+                size: titleFontSize,
+                font: helveticaBold,
+            });
+            y -= 24;
 
             addSection('1. Applicant Details');
             addTextField('Last Name', 'app_lastname');
@@ -579,7 +667,17 @@
             addTextField('Declaration Confirmed (Yes/No)', 'declaration_confirmed', { width: 100 });
             addTextField('Declaration Date', 'decl_date', { width: 140 });
 
-            doc.save('disability-assistance-grant-fillable.pdf');
+            // Save the PDF
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'disability-assistance-grant-fillable.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         }
     })();
 </script>
